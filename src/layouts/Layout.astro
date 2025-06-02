@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = '簡単な問題に答えてもらうことで、あなたに似ている性格の文豪が分かる文豪性格診断' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} - 文豪性格診断</title>
+  </head>
+  <body>
+    <div class="min-h-screen bg-gray-50">
+      <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4">
+          <a href="/" class="text-2xl font-bold text-gray-800 hover:text-gray-600">
+            文豪性格診断
+          </a>
+        </div>
+      </nav>
+      <main class="container mx-auto px-4 py-8">
+        <slot />
+      </main>
+      <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-8 text-center">
+          <p>&copy; 2024 文豪性格診断</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

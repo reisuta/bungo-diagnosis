@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { questionsSet2a, questionsSet2b } from '../data/questions';
+
+// POSTリクエストからフォームデータを取得
+let formData: FormData | null = null;
+let score = 0;
+let questions = questionsSet2a;
+let isGeneral = true;
+
+if (Astro.request.method === 'POST') {
+  formData = await Astro.request.formData();
+  
+  // 第1段階の点数を計算
+  const scores = [
+    parseInt(formData.get('ques1') as string || '0'),
+    parseInt(formData.get('ques2') as string || '0'),
+    parseInt(formData.get('ques3') as string || '0'),
+    parseInt(formData.get('ques4') as string || '0'),
+    parseInt(formData.get('ques5') as string || '0')
+  ];
+  
+  score = scores.reduce((total, val) => total + val, 0);
+  
+  // 25点未満なら一般人ルート、以上なら文豪ルート
+  if (score >= 25) {
+    questions = questionsSet2b;
+    isGeneral = false;
+  }
+}
+
+const title = isGeneral ? '診断ページ2/3(一般人）' : '診断ページ2/3（文豪）';
+---
+
+<Layout title={title}>
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-center mb-2 text-gray-800">
+        {title}
+      </h1>
+      <p class="text-center text-gray-600 mb-8">
+        次の選択肢の中から一つ選んでください。
+      </p>
+      
+      <form action="/test3" method="POST" class="space-y-8">
+        <!-- 第1段階の結果を隠しフィールドで保持 -->
+        <input type="hidden" name="stage1_score" value={score} />
+        <input type="hidden" name="is_general" value={isGeneral} />
+        
+        {questions.map((question, index) => (
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">
+              問題{index + 1}: {question.text}
+            </h2>
+            <div class="space-y-3">
+              {question.options.map((option, optionIndex) => (
+                <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
+                  <input 
+                    type="radio" 
+                    name={question.id} 
+                    value={option.value} 
+                    required
+                    class="mt-1 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-gray-700 leading-relaxed">
+                    {option.text}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+        
+        <div class="text-center mt-8">
+          <button 
+            type="submit" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-md"
+          >
+            次のページへ
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>

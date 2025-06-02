@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="ホーム">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">
+        文豪性格診断
+      </h1>
+      
+      <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+        当サイトは、簡単な問題に答えてもらうことで、あなたに似ている性格の文豪が分かる文豪性格診断を提供しています。
+      </p>
+      
+      <div class="bg-gray-100 rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">
+          診断できる文豪の例
+        </h2>
+        <p class="text-gray-700">
+          太宰治、芥川龍之介、夏目漱石、志賀直哉、谷崎潤一郎等...
+        </p>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/test" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300 shadow-md">
+          診断を開始する
+        </a>
+        <a href="/list" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300 shadow-md">
+          文豪一覧を見る
+        </a>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">
+        診断の流れ
+      </h2>
+      <ol class="list-decimal list-inside space-y-3 text-gray-700">
+        <li>簡単な質問に答えていただきます（全3ページ）</li>
+        <li>あなたの回答を分析します</li>
+        <li>最も性格が近い文豪を診断結果として表示します</li>
+      </ol>
+    </div>
+  </div>
+</Layout>

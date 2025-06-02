@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { questionsSet3aa, questionsSet3ab, questionsSet3ba, questionsSet3bb } from '../data/test3-questions';
+
+// POSTリクエストからフォームデータを取得
+let formData: FormData | null = null;
+let stage1Score = 0;
+let stage2Score = 0;
+let isGeneral = true;
+let questions = questionsSet3aa;
+let title = '診断ページ 3/3';
+
+if (Astro.request.method === 'POST') {
+  formData = await Astro.request.formData();
+  
+  stage1Score = parseInt(formData.get('stage1_score') as string || '0');
+  isGeneral = formData.get('is_general') === 'true';
+  
+  // 第2段階の点数を計算
+  const scores = [
+    parseInt(formData.get('ques1') as string || '0'),
+    parseInt(formData.get('ques2') as string || '0'),
+    parseInt(formData.get('ques3') as string || '0'),
+    parseInt(formData.get('ques4') as string || '0'),
+    parseInt(formData.get('ques5') as string || '0')
+  ];
+  
+  stage2Score = scores.reduce((total, val) => total + val, 0);
+  
+  // 一般人ルートか文豪ルートかで第3段階の質問を決定
+  if (isGeneral) {
+    // 一般人ルート：stage2Scoreで分岐
+    if (stage2Score >= 25) {
+      questions = questionsSet3aa; // リーダータイプ
+    } else {
+      questions = questionsSet3ab; // 性欲タイプ
+    }
+  } else {
+    // 文豪ルート：stage2Scoreで分岐
+    if (stage2Score >= 15) {
+      questions = questionsSet3ba; // 繊細タイプ
+    } else {
+      questions = questionsSet3bb; // リーダータイプ
+    }
+  }
+}
+---
+
+<Layout title={title}>
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-center mb-2 text-gray-800">
+        {title}
+      </h1>
+      <p class="text-center text-gray-600 mb-8">
+        最後の質問です。次の選択肢の中から一つ選んでください。
+      </p>
+      
+      <form action="/result" method="POST" class="space-y-8">
+        <!-- 前段階の結果を隠しフィールドで保持 -->
+        <input type="hidden" name="stage1_score" value={stage1Score} />
+        <input type="hidden" name="stage2_score" value={stage2Score} />
+        <input type="hidden" name="is_general" value={isGeneral} />
+        
+        {questions.map((question, index) => (
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">
+              問題{index + 1}: {question.text}
+            </h2>
+            <div class="space-y-3">
+              {question.options.map((option, optionIndex) => (
+                <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
+                  <input 
+                    type="radio" 
+                    name={question.id} 
+                    value={option.value} 
+                    required
+                    class="mt-1 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-gray-700 leading-relaxed">
+                    {option.text}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+        
+        <div class="text-center mt-8">
+          <button 
+            type="submit" 
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-md"
+          >
+            診断結果を見る
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>

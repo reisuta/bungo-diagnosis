@@ -1,0 +1,124 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { authors } from '../../data/authors';
+
+export async function getStaticPaths() {
+  return authors.map((author) => ({
+    params: { id: author.id },
+    props: { author },
+  }));
+}
+
+const { author } = Astro.props;
+
+// 詳細情報のプレースホルダー（後で実際のコンテンツに置き換え）
+const authorDetails = {
+  dazai: {
+    fullName: '太宰治（だざい おさむ）',
+    period: '1909年6月19日 - 1948年6月13日',
+    works: ['人間失格', '斜陽', '津軽', 'ヴィヨンの妻'],
+    personality: '破産型タイプの特徴として、感情の起伏が激しく、創作への情熱と絶望感を併せ持つ。繊細で傷つきやすい一面がある。',
+    quote: '人間は、愛さえもって生きていけばいいのです。'
+  },
+  akutagawa: {
+    fullName: '芥川龍之介（あくたがわ りゅうのすけ）',
+    period: '1892年3月1日 - 1927年7月24日',
+    works: ['羅生門', '鼻', '地獄変', '蜘蛛の糸'],
+    personality: '繊細タイプの特徴として、鋭い観察力と美的感覚を持つ。完璧主義的な傾向があり、細部への注意力が非常に高い。',
+    quote: '人生は一箱のマッチに似ている。重大に扱うのはばかばかしい。重大に扱わねば危険である。'
+  },
+  natume: {
+    fullName: '夏目漱石（なつめ そうせき）',
+    period: '1867年2月9日 - 1916年12月9日',
+    works: ['吾輩は猫である', 'こころ', '坊っちゃん', '三四郎'],
+    personality: '権威タイプの特徴として、強いリーダーシップと知的な洞察力を持つ。責任感が強く、他者への指導力に長けている。',
+    quote: '智に働けば角が立つ。情に棹させば流される。意地を通せば窮屈だ。'
+  }
+  // 他の文豪は省略（必要に応じて追加）
+};
+
+const details = authorDetails[author.id as keyof typeof authorDetails] || {
+  fullName: author.name,
+  period: '詳細準備中',
+  works: ['作品情報準備中'],
+  personality: `${author.type}の詳細な解説は準備中です。`,
+  quote: '名言準備中'
+};
+---
+
+<Layout title={author.name} description={`${author.name}（${author.type}）の詳細ページ`}>
+  <div class="max-w-4xl mx-auto">
+    <!-- ヘッダー部分 -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">
+          {details.fullName}
+        </h1>
+        <p class="text-xl text-blue-600 font-semibold">
+          {author.type}
+        </p>
+        <p class="text-gray-600 mt-2">
+          {details.period}
+        </p>
+      </div>
+      
+      <!-- 名言 -->
+      <div class="bg-gray-50 rounded-lg p-6 mb-8">
+        <blockquote class="text-lg italic text-gray-800 text-center">
+          「{details.quote}」
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- 性格特徴 -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        性格の特徴
+      </h2>
+      <p class="text-gray-700 leading-relaxed">
+        {details.personality}
+      </p>
+    </div>
+
+    <!-- 代表作品 -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        代表作品
+      </h2>
+      <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {details.works.map((work) => (
+          <li class="bg-gray-50 rounded-lg p-3 text-gray-700">
+            {work}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- このタイプの人におすすめ -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        このタイプの人におすすめ
+      </h2>
+      <div class="space-y-3 text-gray-700">
+        <p>• 創作活動や芸術的な表現に興味がある方</p>
+        <p>• 感受性が豊かで、物事を深く考える傾向がある方</p>
+        <p>• 人間関係や社会について独自の視点を持っている方</p>
+      </div>
+    </div>
+
+    <!-- ナビゲーション -->
+    <div class="text-center">
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
+          診断をやり直す
+        </a>
+        <a href="/list" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
+          他の文豪を見る
+        </a>
+        <a href={`/result?author=${author.id}`} class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
+          診断結果を再表示
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

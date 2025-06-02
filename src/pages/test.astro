@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { questionsSet1 } from '../data/questions';
+---
+
+<Layout title="診断ページ 1/3">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-center mb-2 text-gray-800">
+        診断ページ 1/3
+      </h1>
+      <p class="text-center text-gray-600 mb-8">
+        次の選択肢の中から一つ選んでください。
+      </p>
+      
+      <form action="/test2" method="POST" class="space-y-8">
+        {questionsSet1.map((question, index) => (
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">
+              問題{index + 1}: {question.text}
+            </h2>
+            <div class="space-y-3">
+              {question.options.map((option, optionIndex) => (
+                <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
+                  <input 
+                    type="radio" 
+                    name={question.id} 
+                    value={option.value} 
+                    required
+                    class="mt-1 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-gray-700 leading-relaxed">
+                    {option.text}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+        
+        <div class="text-center mt-8">
+          <button 
+            type="submit" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-md"
+          >
+            次のページへ
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>
