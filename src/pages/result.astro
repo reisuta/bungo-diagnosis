@@ -10,12 +10,21 @@ import { authors } from '../data/authors'
         診断結果
       </h1>
 
-      <div id="resultCard" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-8 mb-8">
-        <!-- 結果はJavaScriptで動的に挿入 -->
+      <!-- ローディングスピナー -->
+      <div id="loadingSpinner" class="text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p class="mt-4 text-gray-600">診断結果を計算中...</p>
       </div>
 
-      <div id="descriptionCard" class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
-        <!-- 説明はJavaScriptで動的に挿入 -->
+      <!-- メインコンテンツ -->
+      <div id="mainContent" class="hidden smooth-transition">
+        <div id="resultCard" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-8 mb-8">
+          <!-- 結果はJavaScriptで動的に挿入 -->
+        </div>
+
+        <div id="descriptionCard" class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+          <!-- 説明はJavaScriptで動的に挿入 -->
+        </div>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -89,6 +98,16 @@ import { authors } from '../data/authors'
   // 詳細リンクを設定
   const detailLink = document.getElementById('detailLink') as HTMLAnchorElement
   detailLink.href = `/authors/${author.id}`
+
+  // ローディング完了後にコンテンツを表示
+  const loadingSpinner = document.getElementById('loadingSpinner')!
+  const mainContent = document.getElementById('mainContent')!
+  
+  setTimeout(() => {
+    loadingSpinner.classList.add('hidden')
+    mainContent.classList.remove('hidden')
+    mainContent.classList.add('fade-in')
+  }, 300) // 結果計算の演出のため少し長めの遅延
 
   // 診断データをクリア（次回の診断のため）
   clearDiagnosisData()

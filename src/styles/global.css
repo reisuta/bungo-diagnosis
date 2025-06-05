@@ -1,1 +1,45 @@
 @import "tailwindcss";
+
+/* ページ遷移とローディングのアニメーション */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* スムーズな表示切り替え */
+.smooth-transition {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.hidden-smooth {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.visible-smooth {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
