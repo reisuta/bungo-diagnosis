@@ -1,18 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { authors } from '../data/authors';
-import { calculateResult } from '../utils/diagnosis';
+import Layout from '../layouts/Layout.astro'
+import { authors } from '../data/authors'
+import { calculateResult } from '../utils/diagnosis'
 
-let resultAuthorId = 'dazai'; // デフォルト
-let resultAuthor = authors.find(a => a.id === resultAuthorId)!;
+let resultAuthorId = 'dazai' // デフォルト
+let resultAuthor = authors.find(a => a.id === resultAuthorId)!
 
 if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData();
-  
-  const stage1Score = parseInt(formData.get('stage1_score') as string || '0');
-  const stage2Score = parseInt(formData.get('stage2_score') as string || '0');
-  const isGeneral = formData.get('is_general') === 'true';
-  
+  const formData = await Astro.request.formData()
+
+  const stage1Score = parseInt(formData.get('stage1_score') as string || '0')
+  const stage2Score = parseInt(formData.get('stage2_score') as string || '0')
+  const isGeneral = formData.get('is_general') === 'true'
+
   // 第3段階の点数を計算
   const scores = [
     parseInt(formData.get('ques1') as string || '0'),
@@ -20,22 +20,22 @@ if (Astro.request.method === 'POST') {
     parseInt(formData.get('ques3') as string || '0'),
     parseInt(formData.get('ques4') as string || '0'),
     parseInt(formData.get('ques5') as string || '0')
-  ];
-  
-  const stage3Score = scores.reduce((total, val) => total + val, 0);
-  
+  ]
+
+  const stage3Score = scores.reduce((total, val) => total + val, 0)
+
   // 診断結果を計算
-  resultAuthorId = calculateResult(stage1Score, stage2Score, stage3Score, isGeneral);
-  resultAuthor = authors.find(a => a.id === resultAuthorId) || authors[0];
+  resultAuthorId = calculateResult(stage1Score, stage2Score, stage3Score, isGeneral)
+  resultAuthor = authors.find(a => a.id === resultAuthorId) || authors[0]
 }
 
 // URLパラメータからの結果表示もサポート
 if (Astro.url.searchParams.has('author')) {
-  const authorParam = Astro.url.searchParams.get('author');
-  const foundAuthor = authors.find(a => a.id === authorParam);
+  const authorParam = Astro.url.searchParams.get('author')
+  const foundAuthor = authors.find(a => a.id === authorParam)
   if (foundAuthor) {
-    resultAuthor = foundAuthor;
-    resultAuthorId = foundAuthor.id;
+    resultAuthor = foundAuthor
+    resultAuthorId = foundAuthor.id
   }
 }
 ---
@@ -46,7 +46,7 @@ if (Astro.url.searchParams.has('author')) {
       <h1 class="text-4xl font-bold mb-4 text-gray-800">
         診断結果
       </h1>
-      
+
       <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-8 mb-8">
         <h2 class="text-3xl font-bold mb-2">
           {resultAuthor.name}
@@ -55,7 +55,7 @@ if (Astro.url.searchParams.has('author')) {
           {resultAuthor.type}
         </p>
       </div>
-      
+
       <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
         <h3 class="text-xl font-semibold mb-4 text-gray-800">
           {resultAuthor.name}について
@@ -64,7 +64,7 @@ if (Astro.url.searchParams.has('author')) {
           {resultAuthor.description || `${resultAuthor.name}は${resultAuthor.type}として知られています。詳細な性格分析は準備中です。`}
         </p>
       </div>
-      
+
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
           もう一度診断する
@@ -76,7 +76,7 @@ if (Astro.url.searchParams.has('author')) {
           詳細を見る
         </a>
       </div>
-      
+
       <div class="mt-8 p-4 bg-yellow-50 rounded-lg">
         <p class="text-sm text-gray-600">
           この診断は娯楽目的のものです。実際の性格や才能を保証するものではありません。

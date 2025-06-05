@@ -1,5 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro'
 import { authors } from '../data/authors';
 ---
 
@@ -9,18 +9,18 @@ import { authors } from '../data/authors';
       <h1 class="text-3xl font-bold text-center mb-4 text-gray-800">
         診断可能な文豪一覧
       </h1>
-      
+
       <p class="text-gray-700 text-center mb-2">
         このページでは、診断結果で表示される文豪一覧を見ることができます。
       </p>
       <p class="text-gray-700 text-center mb-8">
         性格の詳細は、それぞれの文豪名をクリックすることによって、詳細ページに移行できます。
       </p>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {authors.map((author) => (
-          <a 
-            href={`/authors/${author.id}`} 
+          <a
+            href={`/authors/${author.id}`}
             class="block bg-gray-50 hover:bg-gray-100 rounded-lg p-6 transition duration-300 shadow hover:shadow-md"
           >
             <h2 class="text-xl font-semibold text-gray-800 mb-2">
@@ -32,7 +32,7 @@ import { authors } from '../data/authors';
           </a>
         ))}
       </div>
-      
+
       <div class="mt-8 text-center">
         <a href="/" class="text-blue-600 hover:text-blue-800 underline">
           ホームに戻る

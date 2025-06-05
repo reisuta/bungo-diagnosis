@@ -1,5 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro'
 import { questionsSet1 } from '../data/questions';
 ---
 
@@ -12,7 +12,7 @@ import { questionsSet1 } from '../data/questions';
       <p class="text-center text-gray-600 mb-8">
         次の選択肢の中から一つ選んでください。
       </p>
-      
+
       <form action="/test2" method="POST" class="space-y-8">
         {questionsSet1.map((question, index) => (
           <div class="bg-gray-50 rounded-lg p-6">
@@ -22,10 +22,10 @@ import { questionsSet1 } from '../data/questions';
             <div class="space-y-3">
               {question.options.map((option, _optionIndex) => (
                 <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
-                  <input 
-                    type="radio" 
-                    name={question.id} 
-                    value={option.value} 
+                  <input
+                    type="radio"
+                    name={question.id}
+                    value={option.value}
                     required
                     class="mt-1 text-blue-600 focus:ring-blue-500"
                   />
@@ -37,10 +37,10 @@ import { questionsSet1 } from '../data/questions';
             </div>
           </div>
         ))}
-        
+
         <div class="text-center mt-8">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-md"
           >
             次のページへ

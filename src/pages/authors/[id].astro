@@ -1,16 +1,16 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { authors } from '../../data/authors';
+import Layout from '../../layouts/Layout.astro'
+import { authors } from '../../data/authors'
 
 // Get the author ID from the URL
-const { id } = Astro.params;
+const { id } = Astro.params
 
 // Find the author
-const author = authors.find(a => a.id === id);
+const author = authors.find(a => a.id === id)
 
 // If author not found, redirect to list page
 if (!author) {
-  return Astro.redirect('/list');
+  return Astro.redirect('/list')
 }
 ---
 
@@ -26,14 +26,14 @@ if (!author) {
           {author.type}
         </p>
       </div>
-      
+
       <!-- 概要説明 -->
       <div class="bg-blue-50 rounded-lg p-6 mb-6">
         <p class="text-lg text-gray-800 leading-relaxed">
           {author.description}
         </p>
       </div>
-      
+
       <!-- 名言 -->
       {author.quote && (
         <div class="bg-gray-50 rounded-lg p-6">
