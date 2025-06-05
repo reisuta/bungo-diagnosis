@@ -1,4 +1,13 @@
 // 診断ロジックの実装
+export function diagnose(
+  stage1Score: number,
+  stage2Score: number,
+  stage3Score: number,
+  isGeneral: boolean
+): string {
+  return calculateResult(stage1Score, stage2Score, stage3Score, isGeneral)
+}
+
 export function calculateResult(
   stage1Score: number,
   stage2Score: number,

@@ -2,6 +2,12 @@
 import Layout from '../../layouts/Layout.astro'
 import { authors } from '../../data/authors'
 
+export function getStaticPaths() {
+  return authors.map(author => ({
+    params: { id: author.id }
+  }))
+}
+
 // Get the author ID from the URL
 const { id } = Astro.params
 

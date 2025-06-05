@@ -1,68 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import { authors } from '../data/authors'
-import { calculateResult } from '../utils/diagnosis'
-
-let resultAuthorId = 'dazai' // デフォルト
-let resultAuthor = authors.find(a => a.id === resultAuthorId)!
-
-if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData()
-
-  const stage1Score = parseInt(formData.get('stage1_score') as string || '0')
-  const stage2Score = parseInt(formData.get('stage2_score') as string || '0')
-  const isGeneral = formData.get('is_general') === 'true'
-
-  // 第3段階の点数を計算
-  const scores = [
-    parseInt(formData.get('ques1') as string || '0'),
-    parseInt(formData.get('ques2') as string || '0'),
-    parseInt(formData.get('ques3') as string || '0'),
-    parseInt(formData.get('ques4') as string || '0'),
-    parseInt(formData.get('ques5') as string || '0')
-  ]
-
-  const stage3Score = scores.reduce((total, val) => total + val, 0)
-
-  // 診断結果を計算
-  resultAuthorId = calculateResult(stage1Score, stage2Score, stage3Score, isGeneral)
-  resultAuthor = authors.find(a => a.id === resultAuthorId) || authors[0]
-}
-
-// URLパラメータからの結果表示もサポート
-if (Astro.url.searchParams.has('author')) {
-  const authorParam = Astro.url.searchParams.get('author')
-  const foundAuthor = authors.find(a => a.id === authorParam)
-  if (foundAuthor) {
-    resultAuthor = foundAuthor
-    resultAuthorId = foundAuthor.id
-  }
-}
 ---
 
-<Layout title={`診断結果: ${resultAuthor.name}`}>
+<Layout title="診断結果">
   <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-lg shadow-lg p-8 text-center">
       <h1 class="text-4xl font-bold mb-4 text-gray-800">
         診断結果
       </h1>
 
-      <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-8 mb-8">
-        <h2 class="text-3xl font-bold mb-2">
-          {resultAuthor.name}
-        </h2>
-        <p class="text-xl">
-          {resultAuthor.type}
-        </p>
+      <div id="resultCard" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-8 mb-8">
+        <!-- 結果はJavaScriptで動的に挿入 -->
       </div>
 
-      <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800">
-          {resultAuthor.name}について
-        </h3>
-        <p class="text-gray-700 leading-relaxed">
-          {resultAuthor.description || `${resultAuthor.name}は${resultAuthor.type}として知られています。詳細な性格分析は準備中です。`}
-        </p>
+      <div id="descriptionCard" class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+        <!-- 説明はJavaScriptで動的に挿入 -->
       </div>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -72,7 +25,7 @@ if (Astro.url.searchParams.has('author')) {
         <a href="/list" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
           他の文豪を見る
         </a>
-        <a href={`/authors/${resultAuthorId}`} class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
+        <a id="detailLink" href="#" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
           詳細を見る
         </a>
       </div>
@@ -85,3 +38,58 @@ if (Astro.url.searchParams.has('author')) {
     </div>
   </div>
 </Layout>
+
+<script>
+  import { getStageData, clearDiagnosisData } from '../scripts/diagnosis-client'
+  import { authors } from '../data/authors'
+  import { diagnose } from '../utils/diagnosis'
+
+  // 各段階のデータを取得
+  const stage3Data = getStageData(3)
+  
+  if (!stage3Data) {
+    window.location.href = '/test'
+  }
+
+  // 診断を実行
+  const authorId = diagnose(
+    stage3Data!.stage1Score,
+    stage3Data!.stage2Score,
+    stage3Data!.score,
+    stage3Data!.isGeneral
+  )
+  
+  const author = authors.find(a => a.id === authorId) || authors[0]
+
+  // タイトルを更新
+  document.title = `診断結果: ${author.name}`
+
+  // 結果カードを表示
+  const resultCard = document.getElementById('resultCard')!
+  resultCard.innerHTML = `
+    <h2 class="text-3xl font-bold mb-2">
+      ${author.name}
+    </h2>
+    <p class="text-xl">
+      ${author.type}
+    </p>
+  `
+
+  // 説明カードを表示
+  const descriptionCard = document.getElementById('descriptionCard')!
+  descriptionCard.innerHTML = `
+    <h3 class="text-xl font-semibold mb-4 text-gray-800">
+      ${author.name}について
+    </h3>
+    <p class="text-gray-700 leading-relaxed">
+      ${author.description || `${author.name}は${author.type}として知られています。詳細な性格分析は準備中です。`}
+    </p>
+  `
+
+  // 詳細リンクを設定
+  const detailLink = document.getElementById('detailLink') as HTMLAnchorElement
+  detailLink.href = `/authors/${author.id}`
+
+  // 診断データをクリア（次回の診断のため）
+  clearDiagnosisData()
+</script>
