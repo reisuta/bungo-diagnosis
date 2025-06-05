@@ -8,7 +8,7 @@ let stage1Score = 0;
 let stage2Score = 0;
 let isGeneral = true;
 let questions = questionsSet3aa;
-let title = '診断ページ 3/3';
+const title = '診断ページ 3/3';
 
 if (Astro.request.method === 'POST') {
   formData = await Astro.request.formData();
@@ -68,7 +68,7 @@ if (Astro.request.method === 'POST') {
               問題{index + 1}: {question.text}
             </h2>
             <div class="space-y-3">
-              {question.options.map((option, optionIndex) => (
+              {question.options.map((option, _optionIndex) => (
                 <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
                   <input 
                     type="radio" 

@@ -2,48 +2,16 @@
 import Layout from '../../layouts/Layout.astro';
 import { authors } from '../../data/authors';
 
-export async function getStaticPaths() {
-  return authors.map((author) => ({
-    params: { id: author.id },
-    props: { author },
-  }));
+// Get the author ID from the URL
+const { id } = Astro.params;
+
+// Find the author
+const author = authors.find(a => a.id === id);
+
+// If author not found, redirect to list page
+if (!author) {
+  return Astro.redirect('/list');
 }
-
-const { author } = Astro.props;
-
-// 詳細情報のプレースホルダー（後で実際のコンテンツに置き換え）
-const authorDetails = {
-  dazai: {
-    fullName: '太宰治（だざい おさむ）',
-    period: '1909年6月19日 - 1948年6月13日',
-    works: ['人間失格', '斜陽', '津軽', 'ヴィヨンの妻'],
-    personality: '破産型タイプの特徴として、感情の起伏が激しく、創作への情熱と絶望感を併せ持つ。繊細で傷つきやすい一面がある。',
-    quote: '人間は、愛さえもって生きていけばいいのです。'
-  },
-  akutagawa: {
-    fullName: '芥川龍之介（あくたがわ りゅうのすけ）',
-    period: '1892年3月1日 - 1927年7月24日',
-    works: ['羅生門', '鼻', '地獄変', '蜘蛛の糸'],
-    personality: '繊細タイプの特徴として、鋭い観察力と美的感覚を持つ。完璧主義的な傾向があり、細部への注意力が非常に高い。',
-    quote: '人生は一箱のマッチに似ている。重大に扱うのはばかばかしい。重大に扱わねば危険である。'
-  },
-  natume: {
-    fullName: '夏目漱石（なつめ そうせき）',
-    period: '1867年2月9日 - 1916年12月9日',
-    works: ['吾輩は猫である', 'こころ', '坊っちゃん', '三四郎'],
-    personality: '権威タイプの特徴として、強いリーダーシップと知的な洞察力を持つ。責任感が強く、他者への指導力に長けている。',
-    quote: '智に働けば角が立つ。情に棹させば流される。意地を通せば窮屈だ。'
-  }
-  // 他の文豪は省略（必要に応じて追加）
-};
-
-const details = authorDetails[author.id as keyof typeof authorDetails] || {
-  fullName: author.name,
-  period: '詳細準備中',
-  works: ['作品情報準備中'],
-  personality: `${author.type}の詳細な解説は準備中です。`,
-  quote: '名言準備中'
-};
 ---
 
 <Layout title={author.name} description={`${author.name}（${author.type}）の詳細ページ`}>
@@ -52,57 +20,202 @@ const details = authorDetails[author.id as keyof typeof authorDetails] || {
     <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
       <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-gray-800 mb-2">
-          {details.fullName}
+          {author.name}
         </h1>
         <p class="text-xl text-blue-600 font-semibold">
           {author.type}
         </p>
-        <p class="text-gray-600 mt-2">
-          {details.period}
+      </div>
+      
+      <!-- 概要説明 -->
+      <div class="bg-blue-50 rounded-lg p-6 mb-6">
+        <p class="text-lg text-gray-800 leading-relaxed">
+          {author.description}
         </p>
       </div>
       
       <!-- 名言 -->
-      <div class="bg-gray-50 rounded-lg p-6 mb-8">
-        <blockquote class="text-lg italic text-gray-800 text-center">
-          「{details.quote}」
-        </blockquote>
+      {author.quote && (
+        <div class="bg-gray-50 rounded-lg p-6">
+          <blockquote class="text-lg italic text-gray-800 text-center mb-2">
+            「{author.quote}」
+          </blockquote>
+          <p class="text-center text-gray-600">
+            ― {author.quoteSource}
+          </p>
+        </div>
+      )}
+    </div>
+
+    <!-- 性格の特徴 -->
+    {author.characteristics && author.characteristics.length > 0 && (
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          このタイプの特徴
+        </h2>
+        <div class="space-y-4">
+          {author.characteristics.map((characteristic) => (
+            <div class="flex items-start">
+              <span class="text-blue-600 mr-3 text-xl">•</span>
+              <p class="text-gray-700 leading-relaxed flex-1">
+                {characteristic}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    )}
 
-    <!-- 性格特徴 -->
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">
-        性格の特徴
-      </h2>
-      <p class="text-gray-700 leading-relaxed">
-        {details.personality}
-      </p>
-    </div>
+    <!-- 性格の詳細 -->
+    {author.personalityDetails && author.personalityDetails.length > 0 && (
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          {author.name}タイプの特徴
+        </h2>
+        <div class="space-y-4">
+          {author.personalityDetails.map((detail) => (
+            <p class="text-gray-700 leading-relaxed">
+              {detail}
+            </p>
+          ))}
+        </div>
+      </div>
+    )}
 
-    <!-- 代表作品 -->
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">
-        代表作品
-      </h2>
-      <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {details.works.map((work) => (
-          <li class="bg-gray-50 rounded-lg p-3 text-gray-700">
-            {work}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <!-- 文豪について -->
+    {author.authorDetails && author.authorDetails.length > 0 && (
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          {author.name}はどんな人？
+        </h2>
+        <div class="space-y-4">
+          {author.authorDetails.map((detail) => (
+            <p class="text-gray-700 leading-relaxed">
+              {detail}
+            </p>
+          ))}
+        </div>
+      </div>
+    )}
 
-    <!-- このタイプの人におすすめ -->
+    <!-- このタイプの人へのアドバイス -->
     <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">
-        このタイプの人におすすめ
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">
+        このタイプの人へのアドバイス
       </h2>
-      <div class="space-y-3 text-gray-700">
-        <p>• 創作活動や芸術的な表現に興味がある方</p>
-        <p>• 感受性が豊かで、物事を深く考える傾向がある方</p>
-        <p>• 人間関係や社会について独自の視点を持っている方</p>
+      <div class="space-y-4 text-gray-700">
+        {author.type === '破産型タイプ' && (
+          <>
+            <p>• 独特の感性は貴重な才能です。それを活かせる環境を探しましょう</p>
+            <p>• 極端な選択をする前に、信頼できる人に相談することを心がけてください</p>
+            <p>• 創作活動や芸術的な表現は、あなたの内面を昇華させる良い手段となります</p>
+          </>
+        )}
+        {author.type === '繊細タイプ' && (
+          <>
+            <p>• 鋭い感性は素晴らしい才能です。それを否定せず、うまく活用しましょう</p>
+            <p>• 孤独を感じたときは、積極的に信頼できる人とつながることが大切です</p>
+            <p>• 完璧を求めすぎず、時には「これでいい」と思える心の余裕を持ちましょう</p>
+          </>
+        )}
+        {author.type === '権威タイプ' && (
+          <>
+            <p>• リーダーシップは素晴らしい資質ですが、他者の意見にも耳を傾けましょう</p>
+            <p>• 完璧でなくても良いということを受け入れることで、より大きな成長が期待できます</p>
+            <p>• 部下や後輩の気持ちを理解しようとする姿勢が、真のリーダーへの道です</p>
+          </>
+        )}
+        {author.type === '博学タイプ' && (
+          <>
+            <p>• 知識欲は素晴らしい資質です。多方面への興味を大切にしてください</p>
+            <p>• 時には専門外の人にも分かりやすく説明する練習をすると良いでしょう</p>
+            <p>• 議論では相手の立場も理解しようとする姿勢が、より建設的な結果を生みます</p>
+          </>
+        )}
+        {author.type === '天才タイプ' && (
+          <>
+            <p>• 才能は素晴らしい贈り物です。それを世の中のために活かしていきましょう</p>
+            <p>• 野心は大切ですが、時には立ち止まって今を楽しむことも必要です</p>
+            <p>• 批判や嫉妬に直面しても、自分の価値を信じ続けることが大切です</p>
+          </>
+        )}
+        {author.type === '金持ちタイプ' && (
+          <>
+            <p>• 簡潔さを好む性質は、現代のビジネスシーンで大きな強みとなります</p>
+            <p>• 恵まれた環境への感謝を忘れず、それを社会に還元することを考えましょう</p>
+            <p>• 期待に応えることも大切ですが、自分自身の幸せも大切にしてください</p>
+          </>
+        )}
+        {author.type === '愚直タイプ' && (
+          <>
+            <p>• 正直さは最大の美徳です。その素直な性格を大切にしてください</p>
+            <p>• 時には相手の立場に立って考えることで、より良い人間関係が築けます</p>
+            <p>• シンプルな生き方は、複雑な現代社会において貴重な価値観です</p>
+          </>
+        )}
+        {author.type === '変態タイプ' && (
+          <>
+            <p>• 独自の感性は創造性の源です。それを恥じることなく追求しましょう</p>
+            <p>• 理解者は必ずいます。自分の世界観を共有できる仲間を探してください</p>
+            <p>• 社会との折り合いをつけながら、自分らしさを失わない道を見つけましょう</p>
+          </>
+        )}
+        {author.type === '性欲タイプ' && (
+          <>
+            <p>• 自由を愛する心は素晴らしいですが、責任も伴うことを忘れずに</p>
+            <p>• 異性との交流も大切ですが、同性の友人も人生を豊かにしてくれます</p>
+            <p>• 孤独を恐れず、しかし孤立しないようバランスを保つことが大切です</p>
+          </>
+        )}
+        {author.type === '刹那タイプ' && (
+          <>
+            <p>• あなたの独特な感性は、世界に新しい視点をもたらす可能性があります</p>
+            <p>• 極端な選択をする前に、一度立ち止まって考える習慣をつけましょう</p>
+            <p>• 理解者を見つけることが、あなたの才能を開花させる鍵となります</p>
+          </>
+        )}
+        {author.type === 'ビジネスタイプ' && (
+          <>
+            <p>• 経営センスとエンターテインメント性は、現代社会で最も求められる資質です</p>
+            <p>• チームの力を最大限に引き出すあなたの能力を、さらに磨いていきましょう</p>
+            <p>• 成功は一人では達成できません。仲間への感謝を忘れずに</p>
+          </>
+        )}
+        {author.type === 'センスタイプ' && (
+          <>
+            <p>• 繊細さと豪胆さの両面性は、あなたの最大の強みです</p>
+            <p>• 自分を理解してくれる人は必ずいます。焦らず探していきましょう</p>
+            <p>• 面倒見の良さは素晴らしい資質。それを活かして周囲を幸せにしてください</p>
+          </>
+        )}
+        {author.type === '親分タイプ' && (
+          <>
+            <p>• リーダーシップは天性の才能です。それを活かして組織を導いてください</p>
+            <p>• 口の悪さも愛嬌のうち。ただし、相手の気持ちも考慮することが大切です</p>
+            <p>• 部下の個性を理解し、それぞれに合った指導を心がけましょう</p>
+          </>
+        )}
+        {author.type === '無冠の天才タイプ' && (
+          <>
+            <p>• 多才であることは素晴らしい資質です。複数の分野で活躍することを恐れないで</p>
+            <p>• 理想と現実のギャップに苦しむこともありますが、それも成長の糧となります</p>
+            <p>• あなたの繊細さを理解し、支えてくれる人を大切にしてください</p>
+          </>
+        )}
+        {author.type === '放浪タイプ' && (
+          <>
+            <p>• 豊かな想像力は貴重な才能です。それを形にする方法を見つけましょう</p>
+            <p>• 人付き合いが苦手でも大丈夫。自分のペースで関係を築いていけばいいのです</p>
+            <p>• 転々とすることも悪くありません。ただし、大切なものは見失わないように</p>
+          </>
+        )}
+        {author.type === 'ほろ酔いタイプ' && (
+          <>
+            <p>• 実験的な精神は革新を生み出します。ただし、限度を知ることも大切です</p>
+            <p>• 好奇心は素晴らしい原動力ですが、周囲の人々への配慮も忘れずに</p>
+            <p>• あなたの独特な視点は、世界に新しい発見をもたらす可能性があります</p>
+          </>
+        )}
       </div>
     </div>
 
@@ -114,9 +227,6 @@ const details = authorDetails[author.id as keyof typeof authorDetails] || {
         </a>
         <a href="/list" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
           他の文豪を見る
-        </a>
-        <a href={`/result?author=${author.id}`} class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
-          診断結果を再表示
         </a>
       </div>
     </div>
