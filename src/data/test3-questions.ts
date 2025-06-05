@@ -62,7 +62,7 @@ export const questionsSet3aa: Question[] = [
       { text: '部下のものより、良いものをあげて、上司の偉大さをそれとなく教える。', value: 0 }
     ]
   }
-];
+]
 
 // 一般人ルートの第3段階質問（Test3a_b相当）
 export const questionsSet3ab: Question[] = [
@@ -119,7 +119,7 @@ export const questionsSet3ab: Question[] = [
       { text: '一人でも平気', value: 0 }
     ]
   }
-];
+]
 
 // 文豪ルートの第3段階質問（Test3b_a相当）
 export const questionsSet3ba: Question[] = [
@@ -176,7 +176,7 @@ export const questionsSet3ba: Question[] = [
       { text: 'なんとも思わない。または、どんな場所なのかよく知らない', value: 0 }
     ]
   }
-];
+]
 
 // 文豪ルートの第3段階質問（Test3b_b相当）
 export const questionsSet3bb: Question[] = [
@@ -233,4 +233,4 @@ export const questionsSet3bb: Question[] = [
       { text: '得意でも不得意でもない', value: 0 }
     ]
   }
-];
+]

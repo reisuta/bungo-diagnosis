@@ -61,7 +61,7 @@ export const questionsSet1: Question[] = [
       { text: '純文学や哲学書、専門書、学術書といった、自分なりに噛み砕いて考える必要がある本。', value: 10 }
     ]
   }
-];
+]
 
 export const questionsSet2a: Question[] = [
   {
@@ -117,7 +117,7 @@ export const questionsSet2a: Question[] = [
       { text: '友達がいない。', value: 0 }
     ]
   }
-];
+]
 
 export const questionsSet2b: Question[] = [
   {
@@ -173,4 +173,4 @@ export const questionsSet2b: Question[] = [
       { text: '自分', value: 0 }
     ]
   }
-];
+]
