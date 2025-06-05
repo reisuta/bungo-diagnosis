@@ -13,20 +13,79 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
         次の選択肢の中から一つ選んでください。
       </p>
 
-      <form id="test2Form" class="space-y-8">
-        <div id="questionsContainer">
-          <!-- 質問はJavaScriptで動的に挿入 -->
-        </div>
+      <!-- ローディングスピナー -->
+      <div id="loadingSpinner" class="text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p class="mt-2 text-gray-600">質問を読み込み中...</p>
+      </div>
 
-        <div class="text-center mt-8">
-          <button
-            type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-md"
-          >
-            次のページへ
-          </button>
-        </div>
-      </form>
+      <!-- メインコンテンツ -->
+      <div id="mainContent" class="hidden smooth-transition">
+        <form id="test2Form" class="space-y-8">
+          <!-- 一般人用質問セット（事前レンダリング） -->
+          <div id="questionsSet2a" class="hidden space-y-8">
+            {questionsSet2a.map((question, index) => (
+              <div class="bg-gray-50 rounded-lg p-6">
+                <h2 class="text-lg font-semibold mb-4 text-gray-800">
+                  問題{index + 1}: {question.text}
+                </h2>
+                <div class="space-y-3">
+                  {question.options.map((option) => (
+                    <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
+                      <input
+                        type="radio"
+                        name={question.id}
+                        value={option.value}
+                        required
+                        class="mt-1 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span class="text-gray-700 leading-relaxed">
+                        {option.text}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- 文豪用質問セット（事前レンダリング） -->
+          <div id="questionsSet2b" class="hidden space-y-8">
+            {questionsSet2b.map((question, index) => (
+              <div class="bg-gray-50 rounded-lg p-6">
+                <h2 class="text-lg font-semibold mb-4 text-gray-800">
+                  問題{index + 1}: {question.text}
+                </h2>
+                <div class="space-y-3">
+                  {question.options.map((option) => (
+                    <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
+                      <input
+                        type="radio"
+                        name={question.id}
+                        value={option.value}
+                        required
+                        class="mt-1 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span class="text-gray-700 leading-relaxed">
+                        {option.text}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div class="text-center mt-8">
+            <button
+              type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-md"
+            >
+              次のページへ
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </Layout>
@@ -48,34 +107,24 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
   const titleElement = document.querySelector('h1')!
   titleElement.textContent = isGeneral ? '診断ページ 2/3（一般人）' : '診断ページ 2/3（文豪）'
 
-  // 質問を動的に生成
-  const container = document.getElementById('questionsContainer')!
-  questions.forEach((question, index) => {
-    const questionHtml = `
-      <div class="bg-gray-50 rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4 text-gray-800">
-          問題${index + 1}: ${question.text}
-        </h2>
-        <div class="space-y-3">
-          ${question.options.map(option => `
-            <label class="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-3 rounded transition duration-200">
-              <input
-                type="radio"
-                name="${question.id}"
-                value="${option.value}"
-                required
-                class="mt-1 text-blue-600 focus:ring-blue-500"
-              />
-              <span class="text-gray-700 leading-relaxed">
-                ${option.text}
-              </span>
-            </label>
-          `).join('')}
-        </div>
-      </div>
-    `
-    container.insertAdjacentHTML('beforeend', questionHtml)
-  })
+  // 事前レンダリングされた質問セットの表示/非表示を切り替え
+  const questionsSetA = document.getElementById('questionsSet2a')!
+  const questionsSetB = document.getElementById('questionsSet2b')!
+  const loadingSpinner = document.getElementById('loadingSpinner')!
+  const mainContent = document.getElementById('mainContent')!
+  
+  // ローディング完了後にコンテンツを表示
+  setTimeout(() => {
+    if (isGeneral) {
+      questionsSetA.classList.remove('hidden')
+    } else {
+      questionsSetB.classList.remove('hidden')
+    }
+    
+    loadingSpinner.classList.add('hidden')
+    mainContent.classList.remove('hidden')
+    mainContent.classList.add('fade-in')
+  }, 100) // 最小限の遅延でスムーズな表示
 
   // フォーム送信処理
   const form = document.getElementById('test2Form') as HTMLFormElement
@@ -83,7 +132,10 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
     e.preventDefault()
     
     const formData = new FormData(form)
-    const score = calculateScore(formData, questions.map(q => q.id))
+    const questionIds = isGeneral 
+      ? questionsSet2a.map(q => q.id)
+      : questionsSet2b.map(q => q.id)
+    const score = calculateScore(formData, questionIds)
     
     saveStageData(2, {
       score,
