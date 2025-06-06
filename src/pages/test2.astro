@@ -101,7 +101,6 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
   }
 
   const isGeneral = stage1Data!.score < 25
-  const questions = isGeneral ? questionsSet2a : questionsSet2b
 
   // タイトルを更新
   const titleElement = document.querySelector('h1')!
@@ -112,7 +111,7 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
   const questionsSetB = document.getElementById('questionsSet2b')!
   const loadingSpinner = document.getElementById('loadingSpinner')!
   const mainContent = document.getElementById('mainContent')!
-  
+
   // ローディング完了後にコンテンツを表示
   setTimeout(() => {
     if (isGeneral) {
@@ -120,7 +119,7 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
     } else {
       questionsSetB.classList.remove('hidden')
     }
-    
+
     loadingSpinner.classList.add('hidden')
     mainContent.classList.remove('hidden')
     mainContent.classList.add('fade-in')
@@ -130,19 +129,19 @@ import { questionsSet2a, questionsSet2b } from '../data/questions'
   const form = document.getElementById('test2Form') as HTMLFormElement
   form.addEventListener('submit', (e) => {
     e.preventDefault()
-    
+
     const formData = new FormData(form)
-    const questionIds = isGeneral 
+    const questionIds = isGeneral
       ? questionsSet2a.map(q => q.id)
       : questionsSet2b.map(q => q.id)
     const score = calculateScore(formData, questionIds)
-    
+
     saveStageData(2, {
       score,
       isGeneral,
       answers: Object.fromEntries(formData)
     })
-    
+
     window.location.href = '/test3'
   })
 </script>

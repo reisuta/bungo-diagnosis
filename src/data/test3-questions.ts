@@ -11,7 +11,7 @@ export interface Question {
 export const questionsSet3aa: Question[] = [
   {
     id: 'ques1',
-    text: '優秀な部下が遅刻をしてきました。どうしますか？',
+    text: '部下が遅刻してきました。どうしますか？',
     options: [
       { text: '他人に期待していないので、何も言わない。', value: 0 },
       { text: '遅刻の理由を問いただすが、注意まではしない。または優しく注意する', value: 0 },
@@ -22,7 +22,7 @@ export const questionsSet3aa: Question[] = [
   },
   {
     id: 'ques2',
-    text: 'ビジネスについてどう思いますか？',
+    text: 'どの考えに共感しますか？',
     options: [
       { text: 'ビジネスにおいて、エンターテイメント性が大事であり、何事も楽しませるべきである。', value: 10 },
       { text: 'ビジネスは、コスパが重要であり、できるだけ簡潔に少ない労力で済ませるべきである。', value: 0 },
@@ -33,7 +33,7 @@ export const questionsSet3aa: Question[] = [
   },
   {
     id: 'ques3',
-    text: 'どのような文章が好きですか？',
+    text: 'どれを重視しますか？',
     options: [
       { text: '常識的な文章', value: 0 },
       { text: '簡潔な文章', value: 5 },
@@ -44,7 +44,7 @@ export const questionsSet3aa: Question[] = [
   },
   {
     id: 'ques4',
-    text: '最も嫌いなものはなんですか？',
+    text: '嫌いなものはどれですか？',
     options: [
       { text: '無駄な作業。冗長で不必要な文章や仕事', value: 5 },
       { text: '面白さが全くない自己満足な芸術作品', value: 10 },
@@ -55,7 +55,7 @@ export const questionsSet3aa: Question[] = [
   },
   {
     id: 'ques5',
-    text: '部下からお中元をもらいました。どうしますか？',
+    text: '部下があなたに誕生日プレゼントを買ってくれました。どうしますか？',
     options: [
       { text: 'お返しを充分にする。当然のことだ。', value: 10 },
       { text: '嫌いな部下だったら、何もあげない。', value: 0 },
@@ -68,7 +68,7 @@ export const questionsSet3aa: Question[] = [
 export const questionsSet3ab: Question[] = [
   {
     id: 'ques1',
-    text: '給料交渉をするとしたら、どのようにしますか？',
+    text: '上司に給料の値上げを頼もうとしています。どのように頼みますか？',
     options: [
       { text: '「先輩、僕の給料上げてほしいです」と、上司の機嫌に関係なく、正直にお願いする。', value: 10 },
       { text: 'まずは、上司の機嫌を取り、頃合いを見て、やんわりお願いする。', value: 0 },
@@ -79,7 +79,7 @@ export const questionsSet3ab: Question[] = [
   },
   {
     id: 'ques2',
-    text: '最も好きな趣味はなんですか？',
+    text: '趣味はなんですか？',
     options: [
       { text: 'スポーツ。または楽器、音楽鑑賞', value: 0 },
       { text: '友人とつるむこと。またはペット鑑賞', value: 0 },
@@ -90,7 +90,7 @@ export const questionsSet3ab: Question[] = [
   },
   {
     id: 'ques3',
-    text: '理想的な生き方はなんですか？',
+    text: '理想的な生き方について教えてください',
     options: [
       { text: '誰とも結婚せず、誰にも縛られず、気の向いたときに、気に入った人と自由に恋愛して、生きていきたい。', value: 10 },
       { text: '家庭を持って、安定した生活に入ること。', value: 0 },
@@ -101,7 +101,7 @@ export const questionsSet3ab: Question[] = [
   },
   {
     id: 'ques4',
-    text: '何に憧れますか？',
+    text: '好きなものはどれですか？',
     options: [
       { text: '空想や、自分が作り出したフィクションの世界', value: 5 },
       { text: '嘘をつかずに、正直に生きている人', value: 3 },
@@ -112,7 +112,7 @@ export const questionsSet3ab: Question[] = [
   },
   {
     id: 'ques5',
-    text: '最も大切にしている価値観はなんですか？',
+    text: 'あなたの性格の強みを教えてください',
     options: [
       { text: '正直さ。率直さ。', value: 10 },
       { text: '誰にも負けない強い探究心', value: 5 },
@@ -125,7 +125,7 @@ export const questionsSet3ab: Question[] = [
 export const questionsSet3ba: Question[] = [
   {
     id: 'ques1',
-    text: '最も嫌いなものはなんですか？',
+    text: 'あなたが不快に感じるものはなんですか？',
     options: [
       { text: '騒音や、乱暴な生活音', value: 10 },
       { text: '野卑な笑い方', value: 0 },
@@ -136,7 +136,7 @@ export const questionsSet3ba: Question[] = [
   },
   {
     id: 'ques2',
-    text: '何かを成し遂げるために、生活を犠牲にしますか？',
+    text: '人生でどうしても成し遂げたいことがありますが、それは自身の生活を犠牲にしなければ叶わないものでした。どうしますか？',
     options: [
       { text: 'ワークライフバランスが第一なので、諦める', value: 0 },
       { text: '自分の生活をめちゃくちゃにしても、成し遂げるために努力を続ける。', value: 10 },
@@ -147,7 +147,7 @@ export const questionsSet3ba: Question[] = [
   },
   {
     id: 'ques3',
-    text: '理想的な死に方はなんですか？',
+    text: '理想的な死とはなんですか？',
     options: [
       { text: '大切な人に看取ってもらいながら、長寿を全うすること', value: 0 },
       { text: '狂死', value: 10 },
@@ -158,7 +158,7 @@ export const questionsSet3ba: Question[] = [
   },
   {
     id: 'ques4',
-    text: '何に最も恐怖を感じますか？',
+    text: '日々、何を感じることが多いですか？',
     options: [
       { text: '何も感じない', value: 0 },
       { text: '周囲の無理解', value: 0 },
@@ -169,7 +169,7 @@ export const questionsSet3ba: Question[] = [
   },
   {
     id: 'ques5',
-    text: '精神病院についてどう思いますか？',
+    text: '精神病院についてどう考えますか？',
     options: [
       { text: 'あまり良い印象はない。', value: 0 },
       { text: '最も常識的な人が入る場所だと思う。', value: 10 },
@@ -182,7 +182,7 @@ export const questionsSet3ba: Question[] = [
 export const questionsSet3bb: Question[] = [
   {
     id: 'ques1',
-    text: '友人と喧嘩をしました。どうしますか？',
+    text: '友人と喧嘩しました。どのような友人で、どのように仲直りしますか？',
     options: [
       { text: '考え方が古い保守的な友人。相手が謝ってくるまで仲直りしない。', value: 10 },
       { text: '考え方が流行にかぶれている今どきの友人。相手が謝ってくるまで仲直りしない。', value: 0 },
@@ -193,7 +193,7 @@ export const questionsSet3bb: Question[] = [
   },
   {
     id: 'ques2',
-    text: '仕事についてどう思いますか？',
+    text: '将来どうなりたいですか？',
     options: [
       { text: 'まったり平和に暮らしたい。', value: 0 },
       { text: 'ほどほどに出世できればそれでいい。', value: 0 },
@@ -204,7 +204,7 @@ export const questionsSet3bb: Question[] = [
   },
   {
     id: 'ques3',
-    text: '電車に乗っているとき、何を思いますか？',
+    text: '電車に乗っている際、何を感じることが多いですか？',
     options: [
       { text: 'いつも満員電車で嫌だな。', value: 0 },
       { text: 'みんなスマホいじっているから、眼の前の人の顔がわからないんだろうな', value: 0 },
@@ -215,7 +215,7 @@ export const questionsSet3bb: Question[] = [
   },
   {
     id: 'ques4',
-    text: '若い人に何か一言アドバイスするとしたら、なんと言いますか？',
+    text: '9才の妹が人生で大切なことは何？と質問してきました。どのように答えますか？',
     options: [
       { text: '勉強や出世がおそらく大切だが、自分の興味関心を追求することはもっと大切だよ。', value: 5 },
       { text: '境遇に恵まれなくても、周囲に馬鹿にされても、決してへこたれずに努力を続けることだよ。', value: 3 },
