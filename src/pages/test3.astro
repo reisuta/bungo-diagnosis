@@ -151,7 +151,7 @@ import { questionsSet3aa, questionsSet3ab, questionsSet3ba, questionsSet3bb } fr
   // 第1・2段階のデータを取得
   const stage1Data = getStageData(1)
   const stage2Data = getStageData(2)
-  
+
   if (!stage1Data || !stage2Data) {
     window.location.href = '/test'
   }
@@ -162,7 +162,7 @@ import { questionsSet3aa, questionsSet3ab, questionsSet3ba, questionsSet3bb } fr
   // 質問セットを決定して表示
   let activeQuestionSet: string
   let questions
-  
+
   if (isGeneral) {
     if (stage2Score >= 25) {
       activeQuestionSet = 'questionsSet3aa'
@@ -185,7 +185,7 @@ import { questionsSet3aa, questionsSet3ab, questionsSet3ba, questionsSet3bb } fr
   const loadingSpinner = document.getElementById('loadingSpinner')!
   const mainContent = document.getElementById('mainContent')!
   const targetQuestionSet = document.getElementById(activeQuestionSet)!
-  
+
   // ローディング完了後にコンテンツを表示
   setTimeout(() => {
     targetQuestionSet.classList.remove('hidden')
@@ -198,10 +198,10 @@ import { questionsSet3aa, questionsSet3ab, questionsSet3ba, questionsSet3bb } fr
   const form = document.getElementById('test3Form') as HTMLFormElement
   form.addEventListener('submit', (e) => {
     e.preventDefault()
-    
+
     const formData = new FormData(form)
     const score = calculateScore(formData, questions.map(q => q.id))
-    
+
     saveStageData(3, {
       score,
       answers: Object.fromEntries(formData),
@@ -209,7 +209,7 @@ import { questionsSet3aa, questionsSet3ab, questionsSet3ba, questionsSet3bb } fr
       stage2Score: stage2Data!.score,
       isGeneral
     })
-    
+
     window.location.href = '/result'
   })
 </script>

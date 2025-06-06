@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import { authors } from '../data/authors'
 ---
 
 <Layout title="診断結果">
@@ -51,23 +50,33 @@ import { authors } from '../data/authors'
 <script>
   import { getStageData, clearDiagnosisData } from '../scripts/diagnosis-client'
   import { authors } from '../data/authors'
-  import { diagnose } from '../utils/diagnosis'
+  import { diagnose, type Stage3Answers } from '../utils/diagnosis'
 
   // 各段階のデータを取得
   const stage3Data = getStageData(3)
-  
+
   if (!stage3Data) {
     window.location.href = '/test'
   }
 
-  // 診断を実行
+  // 個別回答をStage3Answers形式に変換
+  const stage3Answers: Stage3Answers = {
+    ques1: stage3Data!.answers?.ques1?.toString(),
+    ques2: stage3Data!.answers?.ques2?.toString(),
+    ques3: stage3Data!.answers?.ques3?.toString(),
+    ques4: stage3Data!.answers?.ques4?.toString(),
+    ques5: stage3Data!.answers?.ques5?.toString()
+  }
+
+  // 診断を実行（個別質問による判定も含む）
   const authorId = diagnose(
     stage3Data!.stage1Score,
     stage3Data!.stage2Score,
     stage3Data!.score,
-    stage3Data!.isGeneral
+    stage3Data!.isGeneral,
+    stage3Answers
   )
-  
+
   const author = authors.find(a => a.id === authorId) || authors[0]
 
   // タイトルを更新
@@ -102,7 +111,7 @@ import { authors } from '../data/authors'
   // ローディング完了後にコンテンツを表示
   const loadingSpinner = document.getElementById('loadingSpinner')!
   const mainContent = document.getElementById('mainContent')!
-  
+
   setTimeout(() => {
     loadingSpinner.classList.add('hidden')
     mainContent.classList.remove('hidden')

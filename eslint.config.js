@@ -38,6 +38,7 @@ export default [
       'node_modules/**',
       '.astro/**',
       'public/**',
+      '.vercel/**',
     ],
   },
 ]

@@ -1,10 +1,10 @@
 // クライアントサイドで診断結果を保存・取得するための関数
 
-export function saveStageData(stage: number, data: Record<string, any>) {
+export function saveStageData(stage: number, data: Record<string, unknown>) {
   sessionStorage.setItem(`stage${stage}`, JSON.stringify(data))
 }
 
-export function getStageData(stage: number): Record<string, any> | null {
+export function getStageData(stage: number): Record<string, unknown> | null {
   const data = sessionStorage.getItem(`stage${stage}`)
   return data ? JSON.parse(data) : null
 }

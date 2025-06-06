@@ -1,78 +1,289 @@
-// 診断ロジックの実装
+export interface Stage3Answers {
+  ques1?: string;
+  ques2?: string;
+  ques3?: string;
+  ques4?: string;
+  ques5?: string;
+}
+
+interface AuthorCandidate {
+  author: string;
+  points: number;
+}
+
 export function diagnose(
   stage1Score: number,
   stage2Score: number,
   stage3Score: number,
-  isGeneral: boolean
+  isGeneral: boolean,
+  stage3Answers?: Stage3Answers
 ): string {
-  return calculateResult(stage1Score, stage2Score, stage3Score, isGeneral)
+  return calculateResult(stage1Score, stage2Score, stage3Score, isGeneral, stage3Answers)
 }
 
 export function calculateResult(
   stage1Score: number,
   stage2Score: number,
   stage3Score: number,
-  isGeneral: boolean
+  isGeneral: boolean,
+  stage3Answers?: Stage3Answers
 ): string {
-  // 元のDjangoアプリの複雑な分岐ロジックを再現
-
   if (isGeneral) {
-    // 一般人ルート
-    if (stage2Score >= 25) {
-      // リーダータイプの分岐
-      const totalScore = stage3Score
-
-      if (totalScore >= 28) {
-        return 'kikuti' // 菊池寛
-      } else if (totalScore >= 18) {
-        return 'kouyou' // 尾崎紅葉
-      } else {
-        return 'siga' // 志賀直哉
-      }
-    } else {
-      // 性欲タイプの分岐
-      const totalScore = stage3Score
-
-      if (totalScore >= 25) {
-        return 'itiyou' // 樋口一葉
-      } else if (totalScore >= 15) {
-        return 'kahuu' // 永井荷風
-      } else if (totalScore >= 10) {
-        return 'bizan' // 川上眉山
-      } else {
-        return 'simada' // 島田清次郎
-      }
-    }
+    return stage2Score >= 30
+      ? determineLeaderType(stage3Score, stage3Answers)
+      : determineMypaceType(stage3Score, stage3Answers)
   } else {
-    // 文豪ルート
-    if (stage2Score >= 15) {
-      // 繊細タイプの分岐
-      const totalScore = stage3Score
+    return stage2Score >= 15
+      ? determineRareType(stage3Score, stage3Answers)
+      : determineSensitiveType(stage3Score, stage3Answers)
+  }
+}
 
-      if (totalScore >= 25) {
-        return 'akutagawa' // 芥川龍之介
-      } else if (totalScore >= 15) {
-        return 'kazii' // 梶井基次郎
-      } else {
-        return 'ranpo' // 江戸川乱歩
-      }
-    } else {
-      // リーダータイプの分岐
-      const totalScore = stage3Score
+function determineLeaderType(score: number, answers?: Stage3Answers): string {
+  if (!answers) return getScoreBasedResult(score, ['kikuti', 'kouyou', 'natume', 'siga'])
 
-      if (totalScore >= 30) {
-        return 'natume' // 夏目漱石
-      } else if (totalScore >= 25) {
-        return 'ougai' // 森鷗外
-      } else if (totalScore >= 20) {
-        return 'tanizaki' // 谷崎潤一郎
-      } else if (totalScore >= 15) {
-        return 'saneatu' // 武者小路実篤
-      } else if (totalScore >= 10) {
-        return 'zenzou' // 葛西善蔵
-      } else {
-        return 'dazai' // 太宰治
-      }
+  const candidates: AuthorCandidate[] = [
+    {
+      author: 'kikuti',
+      points: calculateKikutiPoints(answers, score)
+    },
+    {
+      author: 'kouyou',
+      points: calculateKouyouPoints(answers, score)
+    },
+    {
+      author: 'natume',
+      points: calculateNatumePoints(answers, score)
+    },
+    {
+      author: 'siga',
+      points: calculateSigaPoints(answers, score)
+    }
+  ]
+
+  const winner = getHighestPointsCandidate(candidates)
+  return winner.points >= 2 ? winner.author : getScoreBasedResult(score, ['kikuti', 'kouyou', 'natume', 'siga'])
+}
+
+function determineMypaceType(score: number, answers?: Stage3Answers): string {
+  if (!answers) return getScoreBasedResult(score, ['saneatu', 'ougai', 'kahuu', 'ranpo'])
+
+  const candidates: AuthorCandidate[] = [
+    {
+      author: 'saneatu',
+      points: calculateSaneatuPoints(answers, score)
+    },
+    {
+      author: 'kahuu',
+      points: calculateKahuuPoints(answers, score)
+    },
+    {
+      author: 'ougai',
+      points: calculateOugaiPoints(answers, score)
+    },
+    {
+      author: 'ranpo',
+      points: calculateRanpoPoints(answers, score)
+    }
+  ]
+
+  const winner = getHighestPointsCandidate(candidates)
+  return winner.points >= 2 ? winner.author : getScoreBasedResult(score, ['saneatu', 'ougai', 'kahuu', 'ranpo'])
+}
+
+function determineRareType(score: number, answers?: Stage3Answers): string {
+  if (!answers) return getScoreBasedResult(score, ['simada', 'zenzou', 'bizan', 'kazii'])
+
+  const simadaPoints = calculateSimadaPoints(answers, score)
+  if (simadaPoints >= 3 || (simadaPoints >= 2 && score >= 35)) {
+    return 'simada'
+  }
+
+  const candidates: AuthorCandidate[] = [
+    {
+      author: 'bizan',
+      points: calculateBizanPoints(answers, score)
+    },
+    {
+      author: 'zenzou',
+      points: calculateZenzouPoints(answers, score)
+    },
+    {
+      author: 'kazii',
+      points: calculateKaziiPoints(answers, score)
+    }
+  ]
+
+  const winner = getHighestPointsCandidate(candidates)
+  return winner.points >= 3 ? winner.author : getScoreBasedResult(score, ['simada', 'zenzou', 'bizan', 'kazii'])
+}
+
+function determineSensitiveType(score: number, answers?: Stage3Answers): string {
+  if (!answers) return getScoreBasedResult(score, ['akutagawa', 'itiyou', 'tanizaki', 'dazai'])
+
+  const candidates: AuthorCandidate[] = [
+    {
+      author: 'dazai',
+      points: calculateDazaiPoints(answers, score)
+    },
+    {
+      author: 'akutagawa',
+      points: calculateAkutagawaPoints(answers, score)
+    },
+    {
+      author: 'itiyou',
+      points: calculateItiyouPoints(answers, score)
+    },
+    {
+      author: 'tanizaki',
+      points: calculateTanizakiPoints(answers, score)
+    }
+  ]
+
+  const winner = getHighestPointsCandidate(candidates)
+  return winner.points >= 2 ? winner.author : getScoreBasedResult(score, ['akutagawa', 'itiyou', 'tanizaki', 'dazai'])
+}
+
+function calculateKikutiPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques2 === '10') points += 2
+  if (answers.ques4 === '10') points += 2
+  if (score >= 30) points += 1
+  return points
+}
+
+function calculateKouyouPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques1 === '10') points += 2
+  if (answers.ques3 === '10') points += 1
+  if (answers.ques4 === '3') points += 1
+  if (score >= 25) points += 1
+  return points
+}
+
+function calculateNatumePoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques2 === '3') points += 2
+  if (score >= 35) points += 1
+  return points
+}
+
+function calculateSigaPoints(answers: Stage3Answers, _score: number): number {
+  let points = 0
+  if (answers.ques3 === '5') points += 2
+  if (answers.ques4 === '5') points += 1
+  return points
+}
+
+function calculateSaneatuPoints(answers: Stage3Answers, _score: number): number {
+  let points = 0
+  if (answers.ques1 === '10') points += 2
+  if (answers.ques5 === '10') points += 2
+  if (answers.ques4 === '3') points += 1
+  return points
+}
+
+function calculateKahuuPoints(answers: Stage3Answers, _score: number): number {
+  let points = 0
+  if (answers.ques3 === '10') points += 2
+  if (answers.ques4 === '7') points += 2
+  return points
+}
+
+function calculateOugaiPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques4 === '10') points += 2
+  if (answers.ques5 === '5') points += 1
+  if (score >= 25) points += 1
+  return points
+}
+
+function calculateRanpoPoints(answers: Stage3Answers, _score: number): number {
+  let points = 0
+  if (answers.ques2 === '10') points += 2
+  if (answers.ques4 === '5') points += 1
+  return points
+}
+
+function calculateSimadaPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques5 === '10') points += 3
+  if (answers.ques3 === '10') points += 3
+  if (answers.ques2 === '10') points += 1
+  if (answers.ques1 === '10') points += 1
+  if (score >= 40) points += 1
+  return points
+}
+
+function calculateBizanPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques3 === '5') points += 3
+  if (answers.ques4 === '7') points += 2
+  if (answers.ques1 === '10') points += 1
+  if (score >= 35) points += 1
+  return points
+}
+
+function calculateZenzouPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques2 === '10') points += 2
+  if (answers.ques4 === '3') points += 2
+  if (answers.ques3 === '5') points += 1
+  if (score >= 25) points += 1
+  return points
+}
+
+function calculateKaziiPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques4 === '5') points += 2
+  if (answers.ques1 === '10') points += 1
+  if (score >= 20) points += 1
+  return points
+}
+
+function calculateDazaiPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques3 === '10') points += 2
+  if (answers.ques4 === '10') points += 2
+  if (score <= 20) points += 1
+  return points
+}
+
+function calculateAkutagawaPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques5 === '10') points += 2
+  if (answers.ques4 === '7') points += 1
+  if (score >= 30) points += 1
+  return points
+}
+
+function calculateItiyouPoints(answers: Stage3Answers, score: number): number {
+  let points = 0
+  if (answers.ques2 === '10') points += 2
+  if (answers.ques4 === '3') points += 1
+  if (score >= 25) points += 1
+  return points
+}
+
+function calculateTanizakiPoints(answers: Stage3Answers, _score: number): number {
+  let points = 0
+  if (answers.ques1 === '10') points += 2
+  if (answers.ques4 === '5') points += 1
+  return points
+}
+
+function getHighestPointsCandidate(candidates: AuthorCandidate[]): AuthorCandidate {
+  return candidates.reduce((prev, current) =>
+    current.points > prev.points ? current : prev
+  )
+}
+
+function getScoreBasedResult(score: number, authors: string[]): string {
+  const thresholds = [35, 25, 15, 0]
+  for (let i = 0; i < thresholds.length; i++) {
+    if (score >= thresholds[i]) {
+      return authors[i] || authors[authors.length - 1]
     }
   }
+  return authors[authors.length - 1]
 }

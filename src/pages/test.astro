@@ -55,23 +55,23 @@ import { questionsSet1 } from '../data/questions'
   import { saveStageData, calculateScore } from '../scripts/diagnosis-client'
 
   const form = document.getElementById('test1Form') as HTMLFormElement
-  
+
   form.addEventListener('submit', (e) => {
     e.preventDefault()
-    
+
     const formData = new FormData(form)
     const score = calculateScore(formData, ['ques1', 'ques2', 'ques3', 'ques4', 'ques5'])
-    
-    const data: Record<string, any> = {
+
+    const data: Record<string, unknown> = {
       score,
       answers: {}
     }
-    
+
     // 各回答を保存
     formData.forEach((value, key) => {
       data.answers[key] = value
     })
-    
+
     saveStageData(1, data)
     window.location.href = '/test2'
   })
