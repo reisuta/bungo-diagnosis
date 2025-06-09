@@ -48,59 +48,132 @@ import Layout from '../layouts/Layout.astro'
 </Layout>
 
 <script>
-  import { getStageData, clearDiagnosisData } from '../scripts/diagnosis-client'
+  import { clearDiagnosisData } from '../scripts/diagnosis-client'
   import { authors } from '../data/authors'
   import { diagnose, type Stage3Answers } from '../utils/diagnosis'
+  import {
+    validateSessionIntegrity,
+    getValidatedStageData,
+    sanitizeStageData,
+    validateDiagnosisInputs
+  } from '../utils/validation'
+  import {
+    handleDiagnosisError,
+    DiagnosisError,
+    DiagnosisErrorCode
+  } from '../utils/errorHandling'
 
-  // 各段階のデータを取得
-  const stage3Data = getStageData(3)
+  try {
+    // セッション整合性の事前チェック
+    if (!validateSessionIntegrity()) {
+      throw new DiagnosisError(
+        'Session integrity check failed',
+        DiagnosisErrorCode.INTEGRITY_CHECK_FAILED
+      )
+  }
+
+    // 各段階のデータを安全に取得・検証
+    const stage3Data = getValidatedStageData(3)
 
   if (!stage3Data) {
-    window.location.href = '/test'
+      throw new DiagnosisError(
+        'Stage 3 data not found or invalid',
+        DiagnosisErrorCode.MISSING_STAGE_DATA,
+        { stage: 3 }
+      )
   }
 
-  // 個別回答をStage3Answers形式に変換
-  const stage3Answers: Stage3Answers = {
-    ques1: stage3Data!.answers?.ques1?.toString(),
-    ques2: stage3Data!.answers?.ques2?.toString(),
-    ques3: stage3Data!.answers?.ques3?.toString(),
-    ques4: stage3Data!.answers?.ques4?.toString(),
-    ques5: stage3Data!.answers?.ques5?.toString()
+    // データのサニタイズ
+    const sanitizedData = sanitizeStageData(stage3Data)
+
+  // 必須フィールドの存在確認
+  if (
+      typeof sanitizedData.stage1Score !== 'number' ||
+      typeof sanitizedData.stage2Score !== 'number' ||
+      typeof sanitizedData.isGeneral !== 'boolean'
+    ) {
+      throw new DiagnosisError(
+        'Missing required fields in stage data',
+        DiagnosisErrorCode.VALIDATION_FAILED,
+        { missingFields: { stage1Score: sanitizedData.stage1Score, stage2Score: sanitizedData.stage2Score, isGeneral: sanitizedData.isGeneral } }
+      )
   }
 
-  // 診断を実行（個別質問による判定も含む）
-  const authorId = diagnose(
-    stage3Data!.stage1Score,
-    stage3Data!.stage2Score,
-    stage3Data!.score,
-    stage3Data!.isGeneral,
-    stage3Answers
-  )
+    // Stage3Answers の安全な構築
+    const stage3Answers: Stage3Answers = {}
+  const answers = sanitizedData.answers || {};
 
-  const author = authors.find(a => a.id === authorId) || authors[0]
+    // 各回答の検証とサニタイズ
+    ['ques1', 'ques2', 'ques3', 'ques4', 'ques5'].forEach(question => {
+      const answer = answers[question]
+    if (typeof answer === 'string' && ['0', '3', '5', '7', '10'].includes(answer)) {
+        stage3Answers[question as keyof Stage3Answers] = answer
+    }
+    })
 
-  // タイトルを更新
-  document.title = `診断結果: ${author.name}`
+  // 診断実行前の最終検証
+  if (!validateDiagnosisInputs(
+      sanitizedData.stage1Score,
+      sanitizedData.stage2Score,
+      sanitizedData.score,
+      sanitizedData.isGeneral,
+      stage3Answers
+    )) {
+      throw new DiagnosisError(
+        'Diagnosis input validation failed',
+        DiagnosisErrorCode.VALIDATION_FAILED,
+        {
+          inputs: {
+            stage1Score: sanitizedData.stage1Score,
+            stage2Score: sanitizedData.stage2Score,
+            stage3Score: sanitizedData.score,
+            isGeneral: sanitizedData.isGeneral
+          }
+        }
+      )
+  }
+
+    // 診断を実行（検証済みデータのみ使用）
+    const authorId = diagnose(
+      sanitizedData.stage1Score,
+      sanitizedData.stage2Score,
+      sanitizedData.score,
+      sanitizedData.isGeneral,
+      stage3Answers
+    )
+
+  // 結果の検証
+  const author = authors.find(a => a.id === authorId)
+  if (!author) {
+      throw new DiagnosisError(
+        'Invalid diagnosis result',
+        DiagnosisErrorCode.DIAGNOSIS_CALCULATION_FAILED,
+        { authorId, availableAuthors: authors.map(a => a.id) }
+      )
+  }
+
+    // タイトルを更新
+    document.title = `診断結果: ${author.name}`
 
   // 結果カードを表示
   const resultCard = document.getElementById('resultCard')!
   resultCard.innerHTML = `
-    <h2 class="text-3xl font-bold mb-2">
-      ${author.name}
-    </h2>
-    <p class="text-xl">
-      ${author.type}
+      <h2 class="text-3xl font-bold mb-2">
+        ${author.name}
+      </h2>
+      <p class="text-xl">
+        ${author.type}
     </p>
   `
 
   // 説明カードを表示
   const descriptionCard = document.getElementById('descriptionCard')!
   descriptionCard.innerHTML = `
-    <h3 class="text-xl font-semibold mb-4 text-gray-800">
-      ${author.name}について
-    </h3>
-    <p class="text-gray-700 leading-relaxed">
-      ${author.description || `${author.name}は${author.type}として知られています。詳細な性格分析は準備中です。`}
+      <h3 class="text-xl font-semibold mb-4 text-gray-800">
+        ${author.name}について
+      </h3>
+      <p class="text-gray-700 leading-relaxed">
+        ${author.description || `${author.name}は${author.type}として知られています。詳細な性格分析は準備中です。`}
     </p>
   `
 
@@ -113,11 +186,16 @@ import Layout from '../layouts/Layout.astro'
   const mainContent = document.getElementById('mainContent')!
 
   setTimeout(() => {
-    loadingSpinner.classList.add('hidden')
+      loadingSpinner.classList.add('hidden')
     mainContent.classList.remove('hidden')
     mainContent.classList.add('fade-in')
   }, 300) // 結果計算の演出のため少し長めの遅延
 
   // 診断データをクリア（次回の診断のため）
   clearDiagnosisData()
+
+} catch (error) {
+    // エラーハンドリング：全てのエラーを適切に処理
+    handleDiagnosisError(error)
+}
 </script>
