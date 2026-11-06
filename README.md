@@ -26,10 +26,10 @@
 
 ## 🛠️ 技術スタック
 
-- **フレームワーク**: [Astro](https://astro.build/) v5.8.1
-- **スタイリング**: [Tailwind CSS](https://tailwindcss.com/) v4.1.8
+- **フレームワーク**: [Astro](https://astro.build/) v7.4.7
+- **スタイリング**: [Tailwind CSS](https://tailwindcss.com/) v4.3.4
 - **言語**: TypeScript
-- **アダプター**: Node.js（SSR対応）
+- **出力**: 静的サイト（`output: 'static'`、アダプターなし）
 
 ## 📁 プロジェクト構造
 
@@ -94,7 +94,7 @@ const title = 'ページタイトル';
 ## 🚀 セットアップ方法
 
 ### 前提条件
-- Node.js 18以上
+- Node.js 22.23.4 以上（推奨: `.nvmrc` の 24.22.2。2026年10月の Node.js セキュリティリリース適用済みの版）
 - npm または yarn
 
 ### インストール手順
